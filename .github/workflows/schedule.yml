@@ -1,0 +1,28 @@
+name: AI Sniper Auto Scan
+
+on:
+  schedule:
+    # 毎日 UTC 06:30 (日本時間 15:30) に実行
+    - cron: '30 6 * * 1-5'
+  workflow_dispatch: # 手動で今すぐ動かすためのボタン
+
+jobs:
+  run-scanner:
+    runs-on: ubuntu-latest
+    steps:
+    - name: ファイルの準備
+      uses: actions/checkout@v3
+
+    - name: Pythonの準備
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: 必要なパッケージのインストール
+      run: pip install yfinance pandas requests
+
+    - name: スキャンの実行とLINE通知
+      env:
+        LINE_ACCESS_TOKEN: ${{ secrets.LINE_ACCESS_TOKEN }}
+        LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+      run: python main.py
